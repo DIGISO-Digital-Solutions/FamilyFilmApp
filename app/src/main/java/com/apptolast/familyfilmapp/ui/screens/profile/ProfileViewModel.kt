@@ -3,7 +3,6 @@ package com.apptolast.familyfilmapp.ui.screens.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apptolast.familyfilmapp.repositories.BackendRepository
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -20,7 +19,6 @@ import timber.log.Timber
 class ProfileViewModel @Inject constructor(
     private val backendRepository: BackendRepository,
     private val firebaseAuth: FirebaseAuth,
-    private val googleSignInClient: GoogleSignInClient,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileUiState())
@@ -50,6 +48,5 @@ class ProfileViewModel @Inject constructor(
 
     fun logOut() {
         firebaseAuth.signOut()
-        googleSignInClient.signOut()
     }
 }

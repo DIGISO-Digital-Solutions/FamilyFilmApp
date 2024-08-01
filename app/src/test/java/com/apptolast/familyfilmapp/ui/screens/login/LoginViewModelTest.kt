@@ -1,5 +1,7 @@
 package com.apptolast.familyfilmapp.ui.screens.login
 
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
 import app.cash.turbine.test
 import com.apptolast.familyfilmapp.MainDispatcherRule
 import com.apptolast.familyfilmapp.repositories.BackendRepository
@@ -9,6 +11,7 @@ import com.apptolast.familyfilmapp.ui.screens.login.uistates.LoginRegisterState
 import com.apptolast.familyfilmapp.ui.screens.login.uistates.RecoverPassState
 import com.apptolast.familyfilmapp.ui.screens.login.usecases.LoginWithGoogleUseCase
 import com.apptolast.familyfilmapp.ui.screens.login.usecases.RecoverPassUseCase
+import com.apptolast.familyfilmapp.utils.DispatcherProvider
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.common.truth.Truth.assertThat
 import com.google.firebase.auth.FirebaseAuth
@@ -31,9 +34,6 @@ class LoginViewModelTest {
     internal var coroutineRule = MainDispatcherRule()
 
     @Mock
-    private lateinit var loginWithGoogleUseCase: LoginWithGoogleUseCase
-
-    @Mock
     private lateinit var recoverPassUseCase: RecoverPassUseCase
 
     @Mock
@@ -49,7 +49,16 @@ class LoginViewModelTest {
     private lateinit var firebaseAuth: FirebaseAuth
 
     @Mock
-    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var credentialManager: CredentialManager
+
+    @Mock
+    private lateinit var credentialRequest: GetCredentialRequest
+
+    @Mock
+    private lateinit var loginWithGoogleUseCase: LoginWithGoogleUseCase
+
+    @Mock
+    private lateinit var dispatcherProvider: DispatcherProvider
 
     @Mock
     private lateinit var firebaseUser: FirebaseUser
@@ -60,8 +69,10 @@ class LoginViewModelTest {
             backendRepository,
             firebaseRepository,
             localRepository,
-            coroutineRule.testDispatcherProvider,
-            googleSignInClient,
+            credentialManager,
+            credentialRequest,
+            loginWithGoogleUseCase,
+            dispatcherProvider,
         )
     }
 
