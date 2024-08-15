@@ -19,7 +19,7 @@ import javax.inject.Inject
 class DetailScreenViewModel @Inject constructor(
     private val watchListUseCase: WatchListUseCase,
     private val seenListUseCase: SeenListUseCase,
-    private val backendRepository: BackendRepository
+    private val backendRepository: BackendRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailScreenUIState())
@@ -28,6 +28,10 @@ class DetailScreenViewModel @Inject constructor(
         started = SharingStarted.Lazily,
         initialValue = DetailScreenUIState(),
     )
+
+    init {
+        getGroupsToAddMovie()
+    }
 
     fun addMovieToWatchList(groupId: Int, movieId: Int) = viewModelScope.launch {
         watchListUseCase(groupId to movieId).collectLatest { newState ->
@@ -42,13 +46,13 @@ class DetailScreenViewModel @Inject constructor(
             onSuccess = { groups ->
                 _uiState.update { oldState ->
                     oldState.copy(
-                        groups = groups
+                        groups = groups,
                     )
                 }
             },
             onFailure = {
-                Timber.d("Error to get Groups of the users","$it")
-            }
+                Timber.d("Error to get Groups of the users", "$it")
+            },
         )
     }
 

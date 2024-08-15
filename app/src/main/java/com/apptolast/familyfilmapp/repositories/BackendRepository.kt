@@ -10,7 +10,6 @@ import com.apptolast.familyfilmapp.model.mapper.GenreMapper.toDomain
 import com.apptolast.familyfilmapp.model.remote.request.AddMemberBody
 import com.apptolast.familyfilmapp.model.remote.request.RemoveMemberBody
 import com.apptolast.familyfilmapp.model.remote.request.UpdateGroupNameBody
-import com.apptolast.familyfilmapp.model.remote.response.GroupRemote
 import com.apptolast.familyfilmapp.model.remote.response.toDomain
 import com.apptolast.familyfilmapp.network.BackendApi
 import javax.inject.Inject
@@ -87,20 +86,24 @@ class BackendRepositoryImpl @Inject constructor(private val backendApi: BackendA
         backendApi.removeMemberFromGroup(groupId, RemoveMemberBody(userId = userId))
     }
 
-    override suspend fun addMovieToWatchList(groupId: Int, movieId: Int): Result<List<GroupRemote>> =
+    override suspend fun addMovieToWatchList(groupId: Int, movieId: Int): Result<List<Group>> =
         kotlin.runCatching {
-            backendApi.addMovieToWatchList(groupId, movieId)
+            backendApi.addMovieToWatchList(groupId, movieId).map {
+                it.toDomain()
+            }
         }
 
-    override suspend fun addMovieToSeenList(groupId: Int, movieId: Int): Result<List<GroupRemote>> =
+    override suspend fun addMovieToSeenList(groupId: Int, movieId: Int): Result<List<Group>> =
         kotlin.runCatching {
-            backendApi.addMovieToSeenList(groupId, movieId)
+            backendApi.addMovieToSeenList(groupId, movieId).map {
+                it.toDomain()
+            }
         }
 
     override suspend fun getGroupsUser(): Result<List<Group>> = kotlin.runCatching {
-            backendApi.getGroupsUser().map {
-                it.toDomain()
-            }
+        backendApi.getGroupsUser().map {
+            it.toDomain()
+        }
     }
 }
 
@@ -119,7 +122,7 @@ interface BackendRepository {
     suspend fun updateGroupName(groupId: Int, groupName: String): Result<List<Group>>
     suspend fun addMemberGroup(groupId: Int, emailUser: String): Result<Unit>
     suspend fun removeMemberGroup(groupId: Int, userId: Int): Result<Unit>
-    suspend fun addMovieToWatchList(groupId: Int, movieId: Int): Result<List<GroupRemote>>
-    suspend fun addMovieToSeenList(groupId: Int, movieId: Int): Result<List<GroupRemote>>
+    suspend fun addMovieToWatchList(groupId: Int, movieId: Int): Result<List<Group>>
+    suspend fun addMovieToSeenList(groupId: Int, movieId: Int): Result<List<Group>>
     suspend fun getGroupsUser(): Result<List<Group>>
 }
