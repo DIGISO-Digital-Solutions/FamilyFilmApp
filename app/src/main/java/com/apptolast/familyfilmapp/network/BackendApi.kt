@@ -82,6 +82,9 @@ interface BackendApi {
         @Path(MOVIE_ID_PARAM) movieId: Int,
     ): List<GroupRemote>
 
+    @GET(ApiRoutes.GET_GROUPS_OF_USER)
+    suspend fun getGroupsUser(): List<GroupRemote>
+
     @GET(ApiRoutes.GENRES)
     suspend fun getGenres(): List<GenreRemote>
 }
