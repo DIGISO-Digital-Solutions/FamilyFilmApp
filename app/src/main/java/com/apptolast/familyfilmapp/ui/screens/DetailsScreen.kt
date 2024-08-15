@@ -147,7 +147,7 @@ fun DetailsScreen(
                         horizontalArrangement = Arrangement.Center,
                     ) {
                         Button(
-                            onClick = { },
+                            onClick = {  },
                             modifier = Modifier.weight(1f),
                         ) {
                             DetailsButtonContent(icon = Icons.Default.Add, text = "Add to see")
