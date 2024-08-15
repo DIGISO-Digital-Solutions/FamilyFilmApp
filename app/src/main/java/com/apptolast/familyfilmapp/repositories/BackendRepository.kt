@@ -97,8 +97,10 @@ class BackendRepositoryImpl @Inject constructor(private val backendApi: BackendA
             backendApi.addMovieToSeenList(groupId, movieId)
         }
 
-    override suspend fun getGroupsUser(): Result<List<GroupRemote>> = kotlin.runCatching {
-            backendApi.getGroupsUser()
+    override suspend fun getGroupsUser(): Result<List<Group>> = kotlin.runCatching {
+            backendApi.getGroupsUser().map {
+                it.toDomain()
+            }
     }
 }
 
@@ -119,5 +121,5 @@ interface BackendRepository {
     suspend fun removeMemberGroup(groupId: Int, userId: Int): Result<Unit>
     suspend fun addMovieToWatchList(groupId: Int, movieId: Int): Result<List<GroupRemote>>
     suspend fun addMovieToSeenList(groupId: Int, movieId: Int): Result<List<GroupRemote>>
-    suspend fun getGroupsUser(): Result<List<GroupRemote>>
+    suspend fun getGroupsUser(): Result<List<Group>>
 }
