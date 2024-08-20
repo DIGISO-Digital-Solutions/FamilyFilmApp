@@ -22,7 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,12 +36,9 @@ import com.apptolast.familyfilmapp.ui.theme.FamilyFilmAppTheme
 @Composable
 fun DetailDialog(
     onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    group: Group,
+    group: List<Group>,
     checked: Boolean,
     onCheck: () -> Unit,
-    painter: Painter,
-    imageDescription: String,
 ) {
     Dialog(onDismissRequest = { onDismissRequest() }) {
         // Draw a rectangle shape with rounded corners inside the dialog
@@ -59,41 +56,43 @@ fun DetailDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(text = stringResource(id = R.string.dialog_add_movies_description))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Icon(imageVector = Icons.Filled.Groups, contentDescription = "")
-                    Text(text = group.name)
-                    IconToggleButton(checked = checked, onCheckedChange = { onCheck() }) {
-                        if (checked) {
-                            Icon(Icons.Filled.CheckBox, contentDescription = "checked")
-                        } else {
-                            Icon(Icons.Outlined.CheckBoxOutlineBlank, contentDescription = "uncheked")
+                group.forEach { group ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Icon(imageVector = Icons.Filled.Groups, contentDescription = "")
+                        Text(text = group.name)
+                        IconToggleButton(checked = checked, onCheckedChange = { onCheck() }) {
+                            if (checked) {
+                                Icon(Icons.Filled.CheckBox, contentDescription = "checked")
+                            } else {
+                                Icon(Icons.Outlined.CheckBoxOutlineBlank, contentDescription = "uncheked")
+                            }
                         }
                     }
-                }
-                // Row para el switch "vista-para ver"
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = if (checked) "vista" else "para ver", color = Color.White)
+                    // Row para el switch "vista-para ver"
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(text = if (checked) "vista" else "para ver", color = Color.White)
 
-                    // Switch personalizado
-                    Switch(
-                        checked = checked,
-                        onCheckedChange = { onSwitchChange(it) },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color(0xFFF5B300),
-                            uncheckedThumbColor = Color(0xFFF5B300),
-                            checkedTrackColor = Color.White,
-                            uncheckedTrackColor = Color.White
+                        // Switch personalizado
+                        Switch(
+                            checked = checked,
+                            onCheckedChange = { onCheck() },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color(0xFFF5B300),
+                                uncheckedThumbColor = Color(0xFFF5B300),
+                                checkedTrackColor = Color.White,
+                                uncheckedTrackColor = Color.White,
+                            ),
                         )
-                    )
+                    }
                 }
             }
         }

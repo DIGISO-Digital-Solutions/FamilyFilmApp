@@ -27,7 +27,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +45,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.apptolast.familyfilmapp.model.local.MovieCatalogue
+import com.apptolast.familyfilmapp.ui.components.dialogs.DetailDialog
 import com.apptolast.familyfilmapp.ui.screens.home.BASE_URL
 import com.apptolast.familyfilmapp.ui.theme.FamilyFilmAppTheme
 
@@ -55,6 +58,8 @@ fun DetailsScreen(
     val detailScreenUIState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val lazyListState = rememberLazyListState()
+    val isVisible = rememberSaveable { mutableStateOf(false) }
+    val checkedDetailDialog = rememberSaveable { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
     var scrolledY = 0f
     var previousOffset = 0
@@ -147,14 +152,20 @@ fun DetailsScreen(
                         horizontalArrangement = Arrangement.Center,
                     ) {
                         Button(
-                            onClick = {  },
+                            onClick = {
+                                viewModel.getGroupsToAddMovie()
+                                detailScreenUIState.showDialogGroups != detailScreenUIState.showDialogGroups
+                                },
                             modifier = Modifier.weight(1f),
                         ) {
                             DetailsButtonContent(icon = Icons.Default.Add, text = "Add to see")
                         }
                         Spacer(modifier = Modifier.width(14.dp))
                         OutlinedButton(
-                            onClick = { },
+                            onClick = {
+                                viewModel.getGroupsToAddMovie()
+                                detailScreenUIState.showDialogGroups != detailScreenUIState.showDialogGroups
+                            },
                             modifier = Modifier.weight(1f),
                         ) {
                             DetailsButtonContent(icon = Icons.Default.Visibility, text = "Don't seen")
@@ -172,6 +183,15 @@ fun DetailsScreen(
                 }
             }
         }
+    }
+
+    if (detailScreenUIState.showDialogGroups) {
+        DetailDialog(onDismissRequest = {
+            detailScreenUIState.showDialogGroups != detailScreenUIState.showDialogGroups
+        }, group = detailScreenUIState.groups, checked = detailScreenUIState.checkforSeenToSee, onCheck = {
+            detailScreenUIState.checkforSeenToSee != detailScreenUIState.checkforSeenToSee
+
+        })
     }
 }
 
