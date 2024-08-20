@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apptolast.familyfilmapp.exceptions.CustomException.GenericException
@@ -148,33 +149,43 @@ class LoginViewModel @Inject constructor(
     fun handleSignIn(context: Context) = viewModelScope.launch {
         // Handle the successfully returned credential.
 
-        val credentialResponse = credentialManager.getCredential(
-            request = credentialRequest,
-            context = context,
-        )
 
-        val credential = credentialResponse.credential
+        try {
+            // Código para iniciar el intento de autenticación
+            val credentialResponse = credentialManager.getCredential(
+                request = credentialRequest,
+                context = context,
+            )
 
-        if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-            try {
-                // Use googleIdTokenCredential and extract id to validate and
-                // authenticate on your server.
-                val googleIdTokenCredential = GoogleIdTokenCredential
-                    .createFrom(credential.data)
+            val credential = credentialResponse.credential
 
-                loginWithGoogleUseCase(googleIdTokenCredential.idToken).let { result ->
-                    result.collectLatest { newLoginUIState ->
-                        _loginState.update {
-                            newLoginUIState
+            if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                try {
+                    // Use googleIdTokenCredential and extract id to validate and
+                    // authenticate on your server.
+                    val googleIdTokenCredential = GoogleIdTokenCredential
+                        .createFrom(credential.data)
+
+                    loginWithGoogleUseCase(googleIdTokenCredential.idToken).let { result ->
+                        result.collectLatest { newLoginUIState ->
+                            _loginState.update {
+                                newLoginUIState
+                            }
                         }
                     }
+                } catch (e: GoogleIdTokenParsingException) {
+                    Log.e("TAG", "Received an invalid google id token response", e)
                 }
-            } catch (e: GoogleIdTokenParsingException) {
-                Log.e("TAG", "Received an invalid google id token response", e)
+            } else {
+                // Catch any unrecognized custom credential type here.
+                Log.e("TAG", "Unexpected type of credential")
             }
-        } else {
-            // Catch any unrecognized custom credential type here.
-            Log.e("TAG", "Unexpected type of credential")
+        } catch (e: GetCredentialCancellationException) {
+            Log.e("AuthError", e.message, e)
+        } catch (e: Exception) {
+            Log.e("AuthError", "Error inesperado durante la autenticación.", e)
         }
+
+
     }
 }
