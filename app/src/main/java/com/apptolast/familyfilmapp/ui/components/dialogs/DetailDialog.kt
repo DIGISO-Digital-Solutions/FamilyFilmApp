@@ -31,15 +31,9 @@ import com.apptolast.familyfilmapp.R
 import com.apptolast.familyfilmapp.model.local.Group
 import com.apptolast.familyfilmapp.ui.theme.FamilyFilmAppTheme
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailDialog(
-    onDismissRequest: () -> Unit,
-    group: List<Group>,
-    checked: Boolean,
-    onCheck: () -> Unit,
-) {
+fun DetailDialog(onDismissRequest: () -> Unit, group: List<Group>, checked: Boolean, onCheck: () -> Unit) {
     Dialog(onDismissRequest = { onDismissRequest() }) {
         // Draw a rectangle shape with rounded corners inside the dialog
         Card(

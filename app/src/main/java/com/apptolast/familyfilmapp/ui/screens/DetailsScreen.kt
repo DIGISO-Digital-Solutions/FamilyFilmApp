@@ -155,7 +155,7 @@ fun DetailsScreen(
                             onClick = {
                                 viewModel.getGroupsToAddMovie()
                                 detailScreenUIState.showDialogGroups != detailScreenUIState.showDialogGroups
-                                },
+                            },
                             modifier = Modifier.weight(1f),
                         ) {
                             DetailsButtonContent(icon = Icons.Default.Add, text = "Add to see")
@@ -190,7 +190,6 @@ fun DetailsScreen(
             detailScreenUIState.showDialogGroups != detailScreenUIState.showDialogGroups
         }, group = detailScreenUIState.groups, checked = detailScreenUIState.checkforSeenToSee, onCheck = {
             detailScreenUIState.checkforSeenToSee != detailScreenUIState.checkforSeenToSee
-
         })
     }
 }
