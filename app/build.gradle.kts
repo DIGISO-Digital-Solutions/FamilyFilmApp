@@ -74,7 +74,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.activity:activity-compose:1.9.1")
 
-    val androidxLifecycleComposeVersion = "2.8.4" // Crash with 2.8.1 -> no fucking idea why that happens!!
+    val androidxLifecycleComposeVersion = "2.8.4"
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$androidxLifecycleComposeVersion")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$androidxLifecycleComposeVersion")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:$androidxLifecycleComposeVersion")
@@ -120,7 +120,7 @@ dependencies {
     ksp("io.github.dilrajsingh1997:compose-annotation-processor:1.0.6")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")

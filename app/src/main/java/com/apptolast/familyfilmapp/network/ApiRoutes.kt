@@ -22,7 +22,7 @@ object ApiRoutes {
     const val MOVIES_CATALOGUE = "movies/catalogue/{$PAGE_MOVIES}"
     const val MOVIES_RECOMMENDED = "movies/{$GROUP_ID_PARAM}/recommended"
     const val MOVIES_SEARCH_NAME = "movies/{$PAGE_MOVIES}/{$MOVIE_NAME}"
-    const val GET_GROUPS_OF_USER = "$GROUPS/groupsUser"
+    const val GET_GROUPS_OF_USER = "$GROUPS/User"
     const val GENRES = "genres"
 }
 

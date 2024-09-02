@@ -3,6 +3,7 @@ package com.apptolast.familyfilmapp.ui.screens
 import com.apptolast.familyfilmapp.BaseUseCase
 import com.apptolast.familyfilmapp.exceptions.CustomException
 import com.apptolast.familyfilmapp.repositories.BackendRepository
+import com.apptolast.familyfilmapp.ui.screens.detail.DetailScreenUIState
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -23,7 +24,7 @@ class WatchListUseCase @Inject constructor(private val repository: BackendReposi
             onSuccess = {
                 send(
                     DetailScreenUIState().copy(
-                        successMovieToWatchList = "Success Movie Added",
+//                        successMovieToWatchList = "Success Movie Added",
                         isLoading = false,
                         errorMessage = null,
                     ),
@@ -32,7 +33,7 @@ class WatchListUseCase @Inject constructor(private val repository: BackendReposi
             onFailure = {
                 send(
                     DetailScreenUIState().copy(
-                        successMovieToWatchList = "",
+//                        successMovieToWatchList = "",
                         isLoading = false,
                         errorMessage = CustomException.GenericException(
                             it.message ?: "Error",

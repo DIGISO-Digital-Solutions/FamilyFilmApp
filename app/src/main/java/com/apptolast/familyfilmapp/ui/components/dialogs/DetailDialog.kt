@@ -1,109 +1,151 @@
 package com.apptolast.familyfilmapp.ui.components.dialogs
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconToggleButton
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.apptolast.familyfilmapp.R
 import com.apptolast.familyfilmapp.model.local.Group
+import com.apptolast.familyfilmapp.ui.screens.detail.MovieDialogType
 import com.apptolast.familyfilmapp.ui.theme.FamilyFilmAppTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun DetailDialog(onDismissRequest: () -> Unit, group: List<Group>, checked: Boolean, onCheck: () -> Unit) {
-    Dialog(onDismissRequest = { onDismissRequest() }) {
+fun DetailDialog(
+    group: List<Group>,
+    dialogType: MovieDialogType,
+    onConfirm: () -> Unit = {},
+    onDismissRequest: () -> Unit = {},
+) {
+
+    Dialog(
+        onDismissRequest = { onDismissRequest() },
+    ) {
         // Draw a rectangle shape with rounded corners inside the dialog
-        Card(
+//        Card(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(16.dp),
+//            shape = MaterialTheme.shapes.large,
+//        ) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(375.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = MaterialTheme.shapes.large,
+                )
                 .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(text = stringResource(id = R.string.dialog_add_movies_description))
+            Text(
+                text = when (dialogType) {
+                    MovieDialogType.Watched -> "Add a movie you have already watched"
+                    MovieDialogType.Unwatched -> "Add a movie you want to watched"
+                    MovieDialogType.None -> throw IllegalStateException()
+                },
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Start,
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            FlowColumn {
                 group.forEach { group ->
+//                    val isSelected = selectedGroups.value.contains(group)
+
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
-                        Icon(imageVector = Icons.Filled.Groups, contentDescription = "")
-                        Text(text = group.name)
-                        IconToggleButton(checked = checked, onCheckedChange = { onCheck() }) {
-                            if (checked) {
-                                Icon(Icons.Filled.CheckBox, contentDescription = "checked")
-                            } else {
-                                Icon(Icons.Outlined.CheckBoxOutlineBlank, contentDescription = "uncheked")
-                            }
-                        }
-                    }
-                    // Row para el switch "vista-para ver"
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Text(text = if (checked) "vista" else "para ver", color = Color.White)
+//                        Icon(imageVector = Icons.Filled.Groups, contentDescription = "")
+//                        Text(text = group.name)
 
-                        // Switch personalizado
-                        Switch(
-                            checked = checked,
-                            onCheckedChange = { onCheck() },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color(0xFFF5B300),
-                                uncheckedThumbColor = Color(0xFFF5B300),
-                                checkedTrackColor = Color.White,
-                                uncheckedTrackColor = Color.White,
-                            ),
+                        Icon(
+                            imageVector = Icons.Filled.Groups,
+                            contentDescription = "",
+                            modifier = Modifier.size(38.dp),
                         )
+                        Text(
+                            text = group.name,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 8.dp),
+                        )
+                        Checkbox(
+                            checked = true,
+                            onCheckedChange = {
+//                                val newSelectedGroups = selectedGroups.value.toMutableSet()
+//                                if (isSelected) {
+//                                    newSelectedGroups.remove(group)
+//                                } else {
+//                                    newSelectedGroups.add(group)
+//                                }
+//                                selectedGroups.value = newSelectedGroups
+                            },
+                        )
+
                     }
+
+                    // Row para el switch "vista-para ver"
+//                        Row(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.SpaceBetween,
+//                        ) {
+//                            Text(text = if (checked) "vista" else "para ver", color = Color.White)
+//
+//                            // Custom Switch
+//                            Switch(
+//                                checked = checked,
+//                                onCheckedChange = { onCheck() },
+//                                colors = SwitchDefaults.colors(
+//                                    checkedThumbColor = Color(0xFFF5B300),
+//                                    uncheckedThumbColor = Color(0xFFF5B300),
+//                                    checkedTrackColor = Color.White,
+//                                    uncheckedTrackColor = Color.White,
+//                                ),
+//                            )
+//                        }
                 }
             }
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun BasicDialogPreview() {
     FamilyFilmAppTheme {
-        BasicDialog(
-            title = "title",
-            description = "description",
-            confirmButtonText = "ok",
-            cancelButtonText = "cancel",
-            onConfirm = {},
-            onDismiss = {},
+        DetailDialog(
+            group = listOf(
+                Group().copy(name = "Group 1"),
+                Group().copy(name = "Group 2"),
+            ),
+            dialogType = MovieDialogType.Watched,
         )
     }
 }
