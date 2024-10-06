@@ -1,6 +1,5 @@
 package com.apptolast.familyfilmapp.ui.screens.detail
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -116,9 +115,11 @@ fun DetailsScreen(
         )
     }
 
-    if( uiState.showDialogGroups != MovieDialogType.None) {
+    if (uiState.showDialogGroups != MovieDialogType.None) {
         DetailDialog(
             group = uiState.groups,
+            me = uiState.me,
+            selectedMovieId = movie.id,
             dialogType = uiState.showDialogGroups,
 //            onCheck = {
 //                uiState.checkForSeenToSee != uiState.checkForSeenToSee
@@ -185,7 +186,9 @@ private fun DetailsContent(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     Text(
-                        text = "Release Date: ${Calendar.Builder().setInstant(movie.releaseDate).build().get(Calendar.YEAR).toString()}",
+                        text = "Release Date: ${
+                            Calendar.Builder().setInstant(movie.releaseDate).build().get(Calendar.YEAR).toString()
+                        }",
                     )
                     Text(text = String.format(Locale.getDefault(), "Rating: %.1f", movie.voteAverage))
                     Text(

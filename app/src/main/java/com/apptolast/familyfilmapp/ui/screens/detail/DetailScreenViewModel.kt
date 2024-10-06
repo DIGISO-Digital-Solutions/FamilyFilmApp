@@ -3,9 +3,9 @@ package com.apptolast.familyfilmapp.ui.screens.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apptolast.familyfilmapp.repositories.BackendRepository
-import com.apptolast.familyfilmapp.ui.screens.SeenListUseCase
-import com.apptolast.familyfilmapp.ui.screens.WatchListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +31,16 @@ class DetailScreenViewModel @Inject constructor(
     )
 
     init {
-        getGroupsToAddMovie()
+        viewModelScope.launch {
+            awaitAll(
+                async {
+                    backendRepository.me().getOrNull()?.let { user ->
+                        _uiState.update { it.copy(me = user) }
+                    }
+                },
+                async { getGroupsToAddMovie() },
+            )
+        }
     }
 
     private fun getGroupsToAddMovie() = viewModelScope.launch {

@@ -23,6 +23,7 @@ class NetworkModule {
     @Provides
     fun provideBaseUrl(): String = when (BuildConfig.BUILD_TYPE) {
         "debug" -> "https://familyfilmappback-refactor-t0wd.onrender.com/"
+//        "debug" -> "http://localhost:8080/familyfilmapp/api/"
         "staging" -> "https://familyfilmappback-refactor-t0wd.onrender.com/"
         "release" -> "https://familyfilmappback-refactor-t0wd.onrender.com/"
         else -> ""

@@ -3,8 +3,10 @@ package com.apptolast.familyfilmapp.ui.screens.detail
 import com.apptolast.familyfilmapp.BaseUiState
 import com.apptolast.familyfilmapp.exceptions.CustomException
 import com.apptolast.familyfilmapp.model.local.Group
+import com.apptolast.familyfilmapp.model.local.User
 
 data class DetailScreenUIState(
+    val me: User,
     val groups: List<Group>,
     var showDialogGroups: MovieDialogType,
 //    val successMovieToWatchList: String,
@@ -15,6 +17,7 @@ data class DetailScreenUIState(
 ) : BaseUiState {
 
     constructor() : this(
+        me = User(),
 //        successMovieToWatchList = "",
 //        successMovieToViewList = "",
         showDialogGroups = MovieDialogType.None,

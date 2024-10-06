@@ -10,6 +10,7 @@ object ApiRoutes {
     const val ME = "users/me"
     const val USER_CREATE = "users"
     const val MOVIES = "movie"
+//    const val MOVIES = "moviesandseries/movies/popular"
     const val GROUPS = "groups"
     const val CREATE_GROUP = "groups"
     const val REMOVE_GROUP = "groups/{$GROUP_ID_PARAM}"

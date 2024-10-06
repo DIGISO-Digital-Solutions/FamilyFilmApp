@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.apptolast.familyfilmapp.model.local.Group
+import com.apptolast.familyfilmapp.model.local.User
 import com.apptolast.familyfilmapp.ui.screens.detail.MovieDialogType
 import com.apptolast.familyfilmapp.ui.theme.FamilyFilmAppTheme
 
@@ -32,6 +33,8 @@ import com.apptolast.familyfilmapp.ui.theme.FamilyFilmAppTheme
 @Composable
 fun DetailDialog(
     group: List<Group>,
+    me: User,
+    selectedMovieId: Int,
     dialogType: MovieDialogType,
     onConfirm: () -> Unit = {},
     onDismissRequest: () -> Unit = {},
@@ -96,7 +99,22 @@ fun DetailDialog(
                                 .padding(horizontal = 8.dp),
                         )
                         Checkbox(
-                            checked = true,
+                            checked = when (dialogType) {
+                                MovieDialogType.Watched -> {
+
+                                    false
+                                }
+
+                                MovieDialogType.Unwatched -> {
+
+                                    false
+                                }
+
+                                MovieDialogType.None -> {
+                                    /* no-op */
+                                    false
+                                }
+                            },
                             onCheckedChange = {
 //                                val newSelectedGroups = selectedGroups.value.toMutableSet()
 //                                if (isSelected) {
@@ -145,7 +163,9 @@ private fun BasicDialogPreview() {
                 Group().copy(name = "Group 1"),
                 Group().copy(name = "Group 2"),
             ),
+            me = User(),
             dialogType = MovieDialogType.Watched,
+            selectedMovieId = 1,
         )
     }
 }

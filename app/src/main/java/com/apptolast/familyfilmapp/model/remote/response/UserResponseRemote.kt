@@ -22,5 +22,7 @@ fun UserResponseRemote.toDomain() = User(
     id = id ?: -1,
     email = email ?: "",
     language = language ?: "es",
-    provider = "",
+    provider = provider ?: "",
+    moviesWatch = emptyList(),
+    moviesWatchList = emptyList(),
 )
