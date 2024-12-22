@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,6 +67,7 @@ import com.apptolast.familyfilmapp.R
 import com.apptolast.familyfilmapp.navigation.Routes
 import com.apptolast.familyfilmapp.ui.screens.login.components.AlertRecoverPassDialog
 import com.apptolast.familyfilmapp.ui.screens.login.components.LoginMainContent
+import com.apptolast.familyfilmapp.ui.screens.login.uistates.LoginRegisterState
 import com.apptolast.familyfilmapp.ui.screens.login.uistates.LoginUiState
 import com.apptolast.familyfilmapp.ui.screens.login.uistates.RecoverPassState
 import com.apptolast.familyfilmapp.ui.theme.FamilyFilmAppTheme
@@ -122,34 +125,45 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 .padding(innerPadding),
             contentAlignment = Alignment.Center,
         ) {
-            MovieAppLoginScreen()
-//            LoginContent(
-//                loginUiState = loginUiState,
-//                recoverPassState = recoverPassUIState,
-//                onClickLogin = { email, pass ->
-//                    when (loginUiState.screenState) {
-//                        is LoginRegisterState.Login -> viewModel.login(email, pass)
-//                        is LoginRegisterState.Register -> viewModel.register(email, pass)
-//                    }
-//                },
-//                onClickScreenState = viewModel::changeScreenState,
-//                onClickGoogleButton = {
-//                    startForResult.launch(
-//                        viewModel.googleSignInClient.signInIntent,
-//                    )
-//                },
-//                onCLickRecoverPassword = viewModel::recoverPassword,
-//                onRecoveryPassUpdate = viewModel::updateRecoveryPasswordState,
-//            )
+            MovieAppLoginContent(
+                loginUiState = loginUiState,
+                recoverPassState = recoverPassUIState,
+                onClickLogin = { email, pass ->
+                    when (loginUiState.screenState) {
+                        is LoginRegisterState.Login -> viewModel.login(email, pass)
+                        is LoginRegisterState.Register -> viewModel.register(email, pass)
+                    }
+                },
+                onClickScreenState = viewModel::changeScreenState,
+                onClickGoogleButton = {
+                    startForResult.launch(
+                        viewModel.googleSignInClient.signInIntent,
+                    )
+                },
+                onCLickRecoverPassword = viewModel::recoverPassword,
+                onRecoveryPassUpdate = viewModel::updateRecoveryPasswordState,
+            )
+            AnimatedVisibility(loginUiState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.testTag(Constants.CIRCULAR_PROGRESS_INDICATOR),
+                )
+            }
         }
     }
 }
 
 @Composable
-fun MovieAppLoginScreen() {
-    val backgroundImage = painterResource(id = R.drawable.movie_background) // Cambia a tu imagen de fondo
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun MovieAppLoginContent(
+    loginUiState: LoginUiState,
+    recoverPassState: RecoverPassState,
+    onClickLogin: (String, String) -> Unit,
+    onClickGoogleButton: () -> Unit,
+    onClickScreenState: () -> Unit,
+    onCLickRecoverPassword: (String) -> Unit,
+    onRecoveryPassUpdate: (RecoverPassState) -> Unit,
+) {
+    var email by rememberSaveable { mutableStateOf(loginUiState.user.email) }
+    var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     // Lista de imágenes en recursos drawable
@@ -173,7 +187,13 @@ fun MovieAppLoginScreen() {
 
     Box(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .alpha(
+                when (loginUiState.isLoading) {
+                    true -> 0.4f
+                    false -> 1f
+                },
+            ),
     ) {
         // Fondo con imagen temática de películas
         Image(
@@ -189,7 +209,7 @@ fun MovieAppLoginScreen() {
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color(0x7C000000), Color(0xDC000000)),
+                        colors = listOf(Color(0x7C000000), Color(0xEB000000)),
                         startY = 0f,
                         endY = Float.POSITIVE_INFINITY,
                     ),
@@ -199,7 +219,6 @@ fun MovieAppLoginScreen() {
         // Contenido del Login
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
@@ -242,9 +261,9 @@ fun MovieAppLoginScreen() {
             // Campo de Email
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                placeholder = { Text("Ingrese su correo electrónico") },
+                onValueChange = { email = it.trim() },
+                label = { Text(text = stringResource(R.string.login_text_field_email)) },
+//                placeholder = { Text("Ingrese su correo electrónico") },
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -264,9 +283,9 @@ fun MovieAppLoginScreen() {
             // Campo de Contraseña
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
-                label = { Text("Contraseña") },
-                placeholder = { Text("Ingrese su contraseña") },
+                onValueChange = { password = it.trim() },
+                label = { Text(text = stringResource(R.string.login_text_field_password)) },
+//                placeholder = { Text("Ingrese su contraseña") },
                 singleLine = true,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -297,15 +316,15 @@ fun MovieAppLoginScreen() {
 
             // Botón de Login
             Button(
-                onClick = { /* Acción del botón */ },
+                onClick = { onClickLogin(email, password) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF50057)),
+//                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF50057)),
             ) {
                 Text(
-                    text = "Iniciar Sesión",
+                    text = stringResource(id = loginUiState.screenState.buttonText),
                     color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -316,10 +335,37 @@ fun MovieAppLoginScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Texto de registro
+            Row(
+                modifier = Modifier
+                    .padding(6.dp)
+                    .clickable { onClickScreenState() },
+            ) {
+                Text(
+                    text = stringResource(loginUiState.screenState.accountText),
+                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
+
+                    modifier = Modifier.padding(end = 4.dp),
+                )
+
+                // TODO: Create Typography for this text.
+                Text(
+                    text = stringResource(loginUiState.screenState.signText),
+                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
+                        .copy(fontWeight = FontWeight.Bold),
+                )
+            }
             Text(
-                text = "¿No tienes cuenta? Regístrate",
+                modifier = Modifier.clickable {
+                    onRecoveryPassUpdate(
+                        recoverPassState.copy(
+                            isDialogVisible = true,
+                            emailErrorMessage = null,
+                            errorMessage = null,
+                        ),
+                    )
+                },
+                text = stringResource(R.string.login_text_forgot_your_password),
                 style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
-                modifier = Modifier.clickable { /* Navega a la pantalla de registro */ },
             )
         }
     }
@@ -430,7 +476,7 @@ fun LoginContent(
 @Composable
 private fun LoginScreenPreview() {
     FamilyFilmAppTheme {
-        LoginContent(
+        MovieAppLoginContent(
             loginUiState = LoginUiState(),
             recoverPassState = RecoverPassState(),
             onClickLogin = { _, _ -> },
