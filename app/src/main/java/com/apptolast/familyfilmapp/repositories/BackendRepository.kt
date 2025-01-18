@@ -1,11 +1,13 @@
 package com.apptolast.familyfilmapp.repositories
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.apptolast.familyfilmapp.model.local.Genre
 import com.apptolast.familyfilmapp.model.local.Group
 import com.apptolast.familyfilmapp.model.local.Movie
 import com.apptolast.familyfilmapp.model.local.MovieGroupStatus
 import com.apptolast.familyfilmapp.model.local.User
-import com.apptolast.familyfilmapp.model.mapper.AddGroupsMapper.toBody as addGroupToBody
 import com.apptolast.familyfilmapp.model.mapper.GenreMapper.toDomain
 import com.apptolast.familyfilmapp.model.remote.request.AddMemberBody
 import com.apptolast.familyfilmapp.model.remote.request.AddMovieToGroupBody
@@ -15,7 +17,10 @@ import com.apptolast.familyfilmapp.model.remote.request.UpdateGroupNameBody
 import com.apptolast.familyfilmapp.model.remote.response.GroupRemote
 import com.apptolast.familyfilmapp.model.remote.response.toDomain
 import com.apptolast.familyfilmapp.network.BackendApi
+import com.apptolast.familyfilmapp.ui.screens.home.MoviePagingSource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import com.apptolast.familyfilmapp.model.mapper.AddGroupsMapper.toBody as addGroupToBody
 
 class BackendRepositoryImpl @Inject constructor(private val backendApi: BackendApi) : BackendRepository {
 
@@ -27,9 +32,10 @@ class BackendRepositoryImpl @Inject constructor(private val backendApi: BackendA
         backendApi.createUser()
     }
 
-    override suspend fun getMovies(page: Int): Result<List<Movie>> = runCatching {
-        backendApi.getMovies(page).results.map { it.toDomain() }
-    }
+    override fun getMovies(pageSize: Int): Flow<PagingData<Movie>> = Pager(
+        config = PagingConfig(pageSize),
+        pagingSourceFactory = { MoviePagingSource(backendApi) },
+    ).flow
 
     override suspend fun getMoviesByIds(ids: List<Int>): Result<List<Movie>> = runCatching {
         backendApi.getMoviesByIds(GetMoviesByIdBody(ids)).map { it.toDomain() }
@@ -53,8 +59,8 @@ class BackendRepositoryImpl @Inject constructor(private val backendApi: BackendA
 //        }
 //    }
 
-    override suspend fun searchMovieByName(page: Int, movieName: String): Result<List<Movie>> = kotlin.runCatching {
-        backendApi.searchMovieByName(page, movieName).map {
+    override suspend fun searchMovieByName(movieName: String, page: Int): Result<List<Movie>> = kotlin.runCatching {
+        backendApi.searchMovieByName(movieName, page).map {
             it.toDomain()
         }
     }
@@ -137,7 +143,9 @@ class BackendRepositoryImpl @Inject constructor(private val backendApi: BackendA
 interface BackendRepository {
     suspend fun me(): Result<User>
     suspend fun register(): Result<String>
-    suspend fun getMovies(page: Int): Result<List<Movie>>
+
+    //    suspend fun getMovies(page: Int): Result<List<Movie>>
+    fun getMovies(pageSize: Int = 10): Flow<PagingData<Movie>>
     suspend fun getMoviesByIds(ids: List<Int>): Result<List<Movie>>
     suspend fun addMovieToGroup(
         movieId: Int,
@@ -150,7 +158,7 @@ interface BackendRepository {
     // OLD ENDPOINTS
     // /////////////////////////////////////////////////////////////////////////
     // suspend fun getMovies(page: Int): Result<List<MovieCatalogue>>
-    suspend fun searchMovieByName(page: Int, movieName: String): Result<List<Movie>>
+    suspend fun searchMovieByName(movieName: String, page: Int = 1): Result<List<Movie>>
     suspend fun getGroups(): Result<List<Group>>
     suspend fun getGenres(): Result<List<Genre>>
     suspend fun addGroup(groupName: String): Result<List<Group>>
